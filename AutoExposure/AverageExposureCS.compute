@@ -1,0 +1,61 @@
+﻿#pragma kernel SCAN KERNEL_SCAN
+
+// 32 or 64 should be ok
+#define THREAD_COUNT 32
+
+// I/O
+uint2 _Dims;                            // Screen Dimensions
+Texture2D _Source;                      // Screen Texture
+RWStructuredBuffer<float> _OutBuffer;   // Compute Group Output
+
+// Shared row values
+groupshared float rows_lum[THREAD_COUNT];
+groupshared uint rows_pixels[THREAD_COUNT];
+
+// Weird ass function for doing things with the luminosity, looks great on desmos
+float weird_ass_function(float x) {
+    x += 0.1f;
+    float w = 32.0f;
+    return x * (x + w) / (w * x + 0.154f) - 0.137f;
+}
+
+// Convert screen coordinates to the pixel's luminosity
+float get_screen_lum(uint x, uint y) {
+    return dot(_Source[uint2(x, y)].rgb, float3(0.21267291f, 0.7151522f, 0.0721750f));
+}
+
+// Each thread corresponds to a Y coordinate on the screen and is in charge of the whole row
+[numthreads(THREAD_COUNT, 1, 1)]
+void SCAN(uint group : SV_GroupID, uint thread : SV_GroupThreadID, uint y : SV_DispatchThreadID) {
+    float lum_row = 0;
+    uint pixels = 0;
+
+    // Get the total pixels and luminosity of each row
+    if (y < _Dims.y) {
+        for (uint x = 0; x < _Dims.x; x++) {
+            pixels++;
+            lum_row += get_screen_lum(x, y);
+        }
+    }
+
+    // Store the results in the shared arrays
+    rows_lum[thread] = lum_row;
+    rows_pixels[thread] = pixels;
+    GroupMemoryBarrierWithGroupSync();
+
+    // The thread id:0 of each workgroup is in charge of adding upp all the values of the threads in its group
+    if (thread == 0) {
+        float groupLumAvg = 0;
+        uint groupPixels = 0;
+
+        // Add upp everything
+        for (int row = 0; row < THREAD_COUNT; row++) {
+            groupLumAvg += rows_lum[row];
+            groupPixels += rows_pixels[row];
+        }
+
+        // Store the group's luminosity and pixel count in the output buffer
+        _OutBuffer[group * 2] = groupLumAvg;
+        _OutBuffer[group * 2 + 1] = groupPixels;
+    }
+}
