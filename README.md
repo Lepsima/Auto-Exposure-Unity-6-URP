@@ -6,14 +6,14 @@ This shader uses a custom render feature and needs to be applied to the post pro
 The default settings are set in a deep space scenario, the shader hasn't been tested on other scenarios.
 This repository also includes a custom skybox used in that scenario, a dark background with a procedural HDR sun.
 
-I'll try to make a proper .unitypackage file for easier installation
-
 # Usage
-Make sure the project uses Unity 6.0 and the Universal Render Pipeline, and move the repository files to your project's asset folder
+Make sure the project uses Unity 6.0 and the Universal Render Pipeline
+
+First, import the .unitypackage file from the latest release.
 
 Inside your Universal Renderer Data:
 - Add a new render feature: **Auto Exposure Render Feature**
-- Set the Render Shader to: **Lepsima/AutoExposure**
+- Set the Render Shader to: **AutoExposure** (once set will show "Lepsima/AutoExposure")
 - Set the Compute Shader to: **AverageExposureCS**
 - Warnings may show up, finish the setup first.
 
@@ -22,7 +22,8 @@ Inside your Universal Renderer Data:
 On your scene:
 - Go to your post processing volume
 - Add a new override, search for "Auto Exposure"
-- The default values are set on a deep space scene, leave them for now
+- Enable all the settings
+- Leave the default values for now
 
 #
 
@@ -41,6 +42,6 @@ Camera Stack Setup (Multi Camera)
 
 #
 
-This repository includes a custom made skybox that creates a customizable HDR sun with a completely black background.
+Setup complete, additionally, this repository includes a custom made skybox that creates a customizable HDR sun with a completely black background.
 
 If the skybox doesn't fit, just make sure that there is an very bright HDR object where the sun should be.
