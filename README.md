@@ -23,7 +23,7 @@ On your scene:
 - Go to your post processing volume
 - Add a new override, search for "Auto Exposure"
 - Enable all the settings
-- The default values are set on a deep space scene, leave them for now
+- Leave the default values for now
 
 #
 
@@ -42,6 +42,6 @@ Camera Stack Setup (Multi Camera)
 
 #
 
-This repository includes a custom made skybox that creates a customizable HDR sun with a completely black background.
+Setup complete, additionally, this repository includes a custom made skybox that creates a customizable HDR sun with a completely black background.
 
 If the skybox doesn't fit, just make sure that there is an very bright HDR object where the sun should be.
