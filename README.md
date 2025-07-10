@@ -13,7 +13,7 @@ First, import the .unitypackage file from the latest release.
 
 Inside your Universal Renderer Data:
 - Add a new render feature: **Auto Exposure Render Feature**
-- Set the Render Shader to: **Lepsima/AutoExposure**
+- Set the Render Shader to: **AutoExposure** (once set will show "Lepsima/AutoExposure")
 - Set the Compute Shader to: **AverageExposureCS**
 - Warnings may show up, finish the setup first.
 
