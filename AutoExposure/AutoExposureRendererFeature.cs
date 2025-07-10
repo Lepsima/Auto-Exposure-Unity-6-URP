@@ -21,8 +21,8 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 	private ExposureRenderPass _renderPass;	// Applies the average exposure to the screen
     private Material _material;				// Auto-generated material using the render shader
 	
-    private static float _targetExposure = 1;	// Latest computed average exposure
-    private static float _currentExposure = 1;	// The actual exposure, always approaching the target exposure
+    private static float _targetExposure = 0.1f;	// Latest computed average exposure
+    private static float _currentExposure = 0.1f;	// The actual exposure, always approaching the target exposure
     private static float _lastTime = 0;			// The timestamp of the last compute pass
     private static int _computeCounter = 0;		// The amount of skipped compute passes, resets on every compute pass
 
@@ -45,8 +45,8 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 		_renderPass = new ExposureRenderPass(_material, renderPassEvent);
 
 		// Set defaults
-		_targetExposure = 1;
-		_currentExposure = 1;
+		_targetExposure = 0.1f;
+		_currentExposure = 0.1f;
 		_computeCounter = 0;
 		_lastTime = Time.time;
 	}
@@ -98,6 +98,9 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 		float decay = diff > 0 ? _autoExposure.increaseSpeed.value : _autoExposure.decreaseSpeed.value;
 		_currentExposure = ExpDecay(_currentExposure, _targetExposure, decay, deltaTime);
 
+		if (float.IsNaN(_currentExposure)) {
+			_currentExposure = 0.1f;
+		}
 	}
 
 	protected override void Dispose(bool disposing) {
