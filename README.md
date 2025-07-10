@@ -22,6 +22,7 @@ Inside your Universal Renderer Data:
 On your scene:
 - Go to your post processing volume
 - Add a new override, search for "Auto Exposure"
+- Enable all the settings
 - The default values are set on a deep space scene, leave them for now
 
 #
