@@ -41,6 +41,6 @@ Camera Stack Setup (Multi Camera)
 
 #
 
-Setup complete, additionally, this repository includes a custom made skybox that creates a customizable HDR sun with a completely black background.
+Setup complete! Additionally, this repository includes a custom made skybox that creates a customizable HDR sun with a completely black background.
 
 If the skybox doesn't fit with your project, just make sure that there is an very bright HDR object where the sun should be.
