@@ -1,10 +1,9 @@
 # About
 Auto Exposure Shader for Unity 6.0 (tested in 6000.0.51f1) using URP.
 
-This shader uses a custom render feature and needs to be applied to the post processing volume to see the settings
-#
-The default settings are set in a deep space scenario, the shader hasn't been tested on other scenarios.
-This repository also includes a custom skybox used in that scenario, a dark background with a procedural HDR sun.
+Includes the shaders and scripts needed to set up a simple auto exposure shader in URP, using a custom render feature and a volume override.
+
+To set up the shader, follow the steps below.
 
 # Usage
 Make sure the project uses Unity 6.0 and the Universal Render Pipeline
@@ -44,4 +43,4 @@ Camera Stack Setup (Multi Camera)
 
 Setup complete, additionally, this repository includes a custom made skybox that creates a customizable HDR sun with a completely black background.
 
-If the skybox doesn't fit, just make sure that there is an very bright HDR object where the sun should be.
+If the skybox doesn't fit with your project, just make sure that there is an very bright HDR object where the sun should be.
