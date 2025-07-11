@@ -1,5 +1,6 @@
 # About
-Auto Exposure Shader for Unity 6.0 (tested in 6000.0.51f1) using URP.
+Auto Exposure for URP, Unity 6.0 (tested in 6000.0.51f1).
+![logo](Images/AutoExposureImg.png)
 
 Includes the shaders and scripts needed to set up a simple auto exposure shader in URP, using a custom render feature and a volume override.
 
