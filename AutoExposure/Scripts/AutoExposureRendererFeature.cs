@@ -72,7 +72,7 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 		renderer.EnqueuePass(_renderPass);
 		UpdateExposure();
 	}
-
+	
 	private static void UpdateExposure() {
 		if (!_autoExposure) return;
 		
@@ -84,17 +84,6 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 		float diff = _targetExposure - _currentExposure;
 		if (diff == 0) return;
 		
-		/* Linear smoothing, stable and reliable, but very bad looking
-		// Increase or Decrease the current exposure using the settings in the volume
-		float delta;
-		if (_currentExposure > _targetExposure)
-				delta = Math.Max(diff, _autoExposure.decreaseSpeed.value * -deltaTime);
-		else
-			delta = Math.Min(diff, _autoExposure.increaseSpeed.value * deltaTime);
-		
-		_currentExposure += delta;
-		*/
-
 		float decay = diff > 0 ? _autoExposure.increaseSpeed.value : _autoExposure.decreaseSpeed.value;
 		_currentExposure = ExpDecay(_currentExposure, _targetExposure, decay, deltaTime);
 
@@ -110,12 +99,7 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 	// Set the target exposure, 0 is full Black, 1 is full White and >1 is very bright White
 	private static void SetExposure(float avg) {
 		if (!_autoExposure) return;
-		avg = Mathf.Max((Mathf.Log( avg, 2.0f) + 2.4f) * 0.3703704f, avg);
-		
-		float min = _autoExposure.globalExposureRange.value.x;
-		float max = _autoExposure.globalExposureRange.value.y;
-		
-		_targetExposure = Mathf.Clamp(avg, min, max);
+		_targetExposure = avg;
 	}
 
 	// FrameRate independent lerp, Source -> https://www.youtube.com/watch?v=LSNQuFEDOyQ
@@ -188,7 +172,7 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
             cmd.SetComputeBufferParam(data.ComputeShader,0, TempOut, data.Output);
             cmd.DispatchCompute(data.ComputeShader,0, data.Size.y, 1, 1);
             
-            // Im unsure if doing this async is necessary, but seems to give better results
+            // I'm unsure if doing this async is necessary, but seems to give better results
             AsyncGPUReadback.Request(data.Output, OnCompleteReadBack);
         }
         
@@ -216,6 +200,7 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 		private static readonly int ScreenExposureProp = Shader.PropertyToID("_Exposure");
 		private static readonly int ExposureRangeProp = Shader.PropertyToID("_Range");
 		private static readonly int WhitePointProp = Shader.PropertyToID("_WhitePoint");
+		private static readonly int MaxBrightness = Shader.PropertyToID("_MaxBrightness");
 		
 		private const string PassNameTempRT = "Exposure Temp Pass";
 		private const string PassNameCameraColor = "Exposure Camera Pass";
@@ -225,6 +210,7 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 			public TextureHandle Source;// Screen texture
 			public float Exposure;		// Current exposure
 			public Vector2 Range;		// Exposure range
+			public float MaxBrightness; // Maximum pixel brightness
 			public float WhitePoint;	// Variable for tonemapping
 			public Material Material;	// Material reference
 		}
@@ -256,6 +242,7 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 				passData.Source = cameraColorTextureHandle;
 				passData.Material = _material;
 				passData.Exposure = GetExposure();
+				passData.MaxBrightness = _autoExposure.brightnessLimit.value;
 				passData.Range = _autoExposure.exposureRange.value;
 				passData.WhitePoint = _autoExposure.whitePoint.value;
 				
@@ -282,6 +269,7 @@ public class AutoExposureRendererFeature : ScriptableRendererFeature {
 				passData.Material.SetFloat(ScreenExposureProp, passData.Exposure);
 				passData.Material.SetVector(ExposureRangeProp, passData.Range);
 				passData.Material.SetFloat(WhitePointProp, passData.WhitePoint);
+				passData.Material.SetFloat(MaxBrightness, passData.MaxBrightness);
 				Blitter.BlitTexture(cmd, passData.Source, new Vector4(1, 1, 0, 0), passData.Material, 0);
 			}
 			// Back to screen pass

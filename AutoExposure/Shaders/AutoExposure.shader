@@ -18,9 +18,10 @@ Shader "Lepsima/AutoExposure" {
 
             SamplerState sampler_BlitTexture; // Screen texture
 
-            float _Exposure;	// The average exposure to work with
-            float _WhitePoint;	// White point for reinhard tonemapping
-            float2 _Range;		// Min and Max luminosity change, how much can each pixel be offset from it's original luminosity
+			float _MaxBrightness;	// Limit the final brightness to this value
+            float _Exposure;		// The average exposure to work with
+            float _WhitePoint;		// White point for reinhard tonemapping
+            float2 _Range;			// Min and Max luminosity change, how much can each pixel be offset from it's original luminosity
 
             // Converts from RGB space to Yxy (float3.x is Luminance)
 			float3 convert_rgb_to_Yxy(float3 rgb) {
@@ -77,9 +78,10 @@ Shader "Lepsima/AutoExposure" {
  
                 // Yxy.x is Y, the luminance
                 float3 Yxy = convert_rgb_to_Yxy(rgb);
-                float lp = Yxy.x / (9.6f * _Exposure + 0.0001f);
+            	Yxy.x = min(Yxy.x, _MaxBrightness);
 
                 // Tone mapping
+                float lp = Yxy.x / (9.6f * _Exposure + 0.0001f);
                 float new_lum = reinhard2(lp, _WhitePoint);
 
             	// Clamp the added luminosity and convert back to RGB
